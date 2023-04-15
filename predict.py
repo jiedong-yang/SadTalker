@@ -104,57 +104,58 @@ class Predictor(BasePredictor):
         first_frame_dir = os.path.join(save_dir, 'first_frame_dir')
         os.makedirs(first_frame_dir, exist_ok=True)
         print('3DMM Extraction for source image')
-        first_coeff_path, crop_pic_path, crop_info = self.preprocess_model.generate(
-            image, first_frame_dir, preprocess, source_image_flag=True
-        )
+        with torch.inference_mode():
+            first_coeff_path, crop_pic_path, crop_info = self.preprocess_model.generate(
+                image, first_frame_dir, preprocess, source_image_flag=True
+            )
 
-        if first_coeff_path is None:
-            # print("Can't get the coeffs of the input")
-            return "Can't get the coeffs of the input"
+            if first_coeff_path is None:
+                # print("Can't get the coeffs of the input")
+                return "Can't get the coeffs of the input"
 
-        if ref_eyeblink is not None:
-            ref_eyeblink_videoname = os.path.splitext(os.path.split(ref_eyeblink)[-1])[0]
-            ref_eyeblink_frame_dir = os.path.join(save_dir, ref_eyeblink_videoname)
-            os.makedirs(ref_eyeblink_frame_dir, exist_ok=True)
-            print('3DMM Extraction for the reference video providing eye blinking')
-            ref_eyeblink_coeff_path, _, _ = self.preprocess_model.generate(ref_eyeblink, ref_eyeblink_frame_dir)
-        else:
-            ref_eyeblink_coeff_path = None
-
-        if ref_pose is not None:
-            if ref_pose == ref_eyeblink:
-                ref_pose_coeff_path = ref_eyeblink_coeff_path
+            if ref_eyeblink is not None:
+                ref_eyeblink_videoname = os.path.splitext(os.path.split(ref_eyeblink)[-1])[0]
+                ref_eyeblink_frame_dir = os.path.join(save_dir, ref_eyeblink_videoname)
+                os.makedirs(ref_eyeblink_frame_dir, exist_ok=True)
+                print('3DMM Extraction for the reference video providing eye blinking')
+                ref_eyeblink_coeff_path, _, _ = self.preprocess_model.generate(ref_eyeblink, ref_eyeblink_frame_dir)
             else:
-                ref_pose_videoname = os.path.splitext(os.path.split(ref_pose)[-1])[0]
-                ref_pose_frame_dir = os.path.join(save_dir, ref_pose_videoname)
-                os.makedirs(ref_pose_frame_dir, exist_ok=True)
-                print('3DMM Extraction for the reference video providing pose')
-                ref_pose_coeff_path, _, _ = self.preprocess_model.generate(ref_pose, ref_pose_frame_dir)
-        else:
-            ref_pose_coeff_path = None
+                ref_eyeblink_coeff_path = None
 
-        # audio2ceoff
-        batch = get_data(first_coeff_path, audio, "cuda", ref_eyeblink_coeff_path, still=still)
-        coeff_path = self.audio_to_coeff.generate(batch, save_dir, pose_style, ref_pose_coeff_path)
+            if ref_pose is not None:
+                if ref_pose == ref_eyeblink:
+                    ref_pose_coeff_path = ref_eyeblink_coeff_path
+                else:
+                    ref_pose_videoname = os.path.splitext(os.path.split(ref_pose)[-1])[0]
+                    ref_pose_frame_dir = os.path.join(save_dir, ref_pose_videoname)
+                    os.makedirs(ref_pose_frame_dir, exist_ok=True)
+                    print('3DMM Extraction for the reference video providing pose')
+                    ref_pose_coeff_path, _, _ = self.preprocess_model.generate(ref_pose, ref_pose_frame_dir)
+            else:
+                ref_pose_coeff_path = None
 
-        # 3dface render
-        # if face3dvis:
-        #     from src.face3d.visualize import gen_composed_video
-        #     gen_composed_video(args, device, first_coeff_path, coeff_path, audio_path,
-        #                        os.path.join(save_dir, '3dface.mp4'))
+            # audio2ceoff
+            batch = get_data(first_coeff_path, audio, "cuda", ref_eyeblink_coeff_path, still=still)
+            coeff_path = self.audio_to_coeff.generate(batch, save_dir, pose_style, ref_pose_coeff_path)
 
-        # coeff2video
-        data = get_facerender_data(coeff_path, crop_pic_path, first_coeff_path, audio,
-                                   batch_size, input_yaw_list, input_pitch_list, input_roll_list,
-                                   expression_scale=expression_scale, still_mode=still,
-                                   preprocess=preprocess)
+            # 3dface render
+            # if face3dvis:
+            #     from src.face3d.visualize import gen_composed_video
+            #     gen_composed_video(args, device, first_coeff_path, coeff_path, audio_path,
+            #                        os.path.join(save_dir, '3dface.mp4'))
 
-        outputs = self.animate_from_coeff.generate(
-            data, save_dir, image, crop_info,
-            enhancer=enhancer,
-            background_enhancer=background_enhancer,
-            preprocess=preprocess
-        )
+            # coeff2video
+            data = get_facerender_data(coeff_path, crop_pic_path, first_coeff_path, audio,
+                                       batch_size, input_yaw_list, input_pitch_list, input_roll_list,
+                                       expression_scale=expression_scale, still_mode=still,
+                                       preprocess=preprocess)
+
+            outputs = self.animate_from_coeff.generate(
+                data, save_dir, image, crop_info,
+                enhancer=enhancer,
+                background_enhancer=background_enhancer,
+                preprocess=preprocess
+            )
 
         if preprocess == 'full':
             return [Path(output) for output in outputs]
