@@ -160,7 +160,9 @@ class AnimateFromCoeff():
         ### the generated video is 256x256, so we  keep the aspect ratio, 
         original_size = crop_info[0]
         if original_size:
-            result = [ cv2.resize(result_i,(256, int(256.0 * original_size[1]/original_size[0]) )) for result_i in result ]
+            result = [
+                cv2.resize(result_i, (256, int(256.0 * original_size[1]/original_size[0]))) for result_i in result
+            ]
         
         video_name = x['video_name']  + '.mp4'
         path = os.path.join(video_save_dir, 'temp_'+video_name)
@@ -169,7 +171,7 @@ class AnimateFromCoeff():
         av_path = os.path.join(video_save_dir, video_name)
         return_path = av_path 
         
-        audio_path =  x['audio_path'] 
+        audio_path = x['audio_path']
         audio_name = os.path.splitext(os.path.split(audio_path)[-1])[0]
         new_audio_path = os.path.join(video_save_dir, audio_name+'.wav')
         start_time = 0
@@ -191,23 +193,25 @@ class AnimateFromCoeff():
             paste_pic(path, pic_path, crop_info, new_audio_path, full_video_path)
             print(f'The generated video is named {video_save_dir}/{video_name_full}') 
         else:
-            full_video_path = av_path 
+            return_path = av_path
 
         #### paste back then enhancers
         if enhancer:
-            video_name_enhancer = x['video_name']  + '_enhanced.mp4'
+            video_name_enhancer = x['video_name'] + '_enhanced.mp4'
             enhanced_path = os.path.join(video_save_dir, 'temp_'+video_name_enhancer)
             av_path_enhancer = os.path.join(video_save_dir, video_name_enhancer) 
             return_path = av_path_enhancer
             enhanced_images = face_enhancer(full_video_path, method=enhancer, bg_upsampler=background_enhancer)
             imageio.mimsave(enhanced_path, enhanced_images, fps=float(25))
             
-            save_video_with_watermark(enhanced_path, new_audio_path, av_path_enhancer, watermark= False)
+            save_video_with_watermark(enhanced_path, new_audio_path, av_path_enhancer, watermark=False)
             print(f'The generated video is named {video_save_dir}/{video_name_enhancer}')
             os.remove(enhanced_path)
 
         os.remove(path)
         os.remove(new_audio_path)
 
-        return av_path, return_path
+        if preprocess.lower() == 'full':
+            return av_path, return_path
+        return return_path
 
