@@ -73,7 +73,7 @@ class Predictor(BasePredictor):
         audio: Path = Input(description="Driving audio input, mono only"),
         ref_pose: Path = Input(description="pose reference video"),
         # ref_eyeblink: Path = Input(description="eye blink reference video"),
-        preprocess: str = Input(description="preprocess mode", choices=['crop', 'resize', 'full'], default='crop'),
+        preprocess: str = Input(description="preprocess mode", choices=['full'], default='full'),
         still: str = Input(
             description="still mode", choices=['True', 'False'], default='False'
         ),
