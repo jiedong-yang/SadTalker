@@ -23,28 +23,28 @@ class Predictor(BasePredictor):
     def setup(self):
         """Load the model into memory to make running multiple predictions efficient"""
         # self.model = torch.load("./weights.pth")
-        current_code_path = sys.argv[0]
-        current_root_path = os.path.split(current_code_path)[0]
+        # current_code_path = sys.argv[0]
+        # current_root_path = os.path.split(current_code_path)[0]
+        #
+        # os.environ['TORCH_HOME'] = os.path.join(current_root_path, './checkpoints')
 
-        os.environ['TORCH_HOME'] = os.path.join(current_root_path, './checkpoints')
-
-        path_of_lm_croper = os.path.join(current_root_path, './checkpoints',
+        path_of_lm_croper = os.path.join('./checkpoints',
                                          'shape_predictor_68_face_landmarks.dat')
-        path_of_net_recon_model = os.path.join(current_root_path, './checkpoints', 'epoch_20.pth')
-        dir_of_BFM_fitting = os.path.join(current_root_path, './checkpoints', 'BFM_Fitting')
-        wav2lip_checkpoint = os.path.join(current_root_path, './checkpoints', 'wav2lip.pth')
+        path_of_net_recon_model = os.path.join('./checkpoints', 'epoch_20.pth')
+        dir_of_BFM_fitting = os.path.join('./checkpoints', 'BFM_Fitting')
+        wav2lip_checkpoint = os.path.join('./checkpoints', 'wav2lip.pth')
 
-        audio2pose_checkpoint = os.path.join(current_root_path, './checkpoints', 'auido2pose_00140-model.pth')
-        audio2pose_yaml_path = os.path.join(current_root_path, 'src', 'config', 'auido2pose.yaml')
+        audio2pose_checkpoint = os.path.join('./checkpoints', 'auido2pose_00140-model.pth')
+        audio2pose_yaml_path = os.path.join('src', 'config', 'auido2pose.yaml')
 
-        audio2exp_checkpoint = os.path.join(current_root_path, './checkpoints', 'auido2exp_00300-model.pth')
-        audio2exp_yaml_path = os.path.join(current_root_path, 'src', 'config', 'auido2exp.yaml')
+        audio2exp_checkpoint = os.path.join('./checkpoints', 'auido2exp_00300-model.pth')
+        audio2exp_yaml_path = os.path.join('src', 'config', 'auido2exp.yaml')
 
-        free_view_checkpoint = os.path.join(current_root_path, './checkpoints', 'facevid2vid_00189-model.pth.tar')
+        free_view_checkpoint = os.path.join('./checkpoints', 'facevid2vid_00189-model.pth.tar')
 
         # if preprocess == 'full':
-        mapping_checkpoint = os.path.join(current_root_path, './checkpoints', 'mapping_00109-model.pth.tar')
-        facerender_yaml_path = os.path.join(current_root_path, 'src', 'config', 'facerender_still.yaml')
+        mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00109-model.pth.tar')
+        facerender_yaml_path = os.path.join('src', 'config', 'facerender_still.yaml')
         # else:
         #     mapping_checkpoint = os.path.join(current_root_path, './checkpoints', 'mapping_00229-model.pth.tar')
         #     facerender_yaml_path = os.path.join(current_root_path, 'src', 'config', 'facerender.yaml')
