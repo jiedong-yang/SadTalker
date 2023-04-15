@@ -97,6 +97,8 @@ class Predictor(BasePredictor):
         input_yaw_list, input_pitch_list, input_roll_list = None, None, None
 
         still = True if still == "True" else False
+        enhancer = None if enhancer == ' ' else enhancer
+        background_enhancer = None if background_enhancer == ' ' else background_enhancer
 
         save_dir = Path(tempfile.mkdtemp())
         first_frame_dir = os.path.join(save_dir, 'first_frame_dir')
