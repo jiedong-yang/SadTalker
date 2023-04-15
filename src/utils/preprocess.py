@@ -16,6 +16,7 @@ except:
 
 from scipy.io import loadmat, savemat
 from src.utils.croper import Croper
+import imageio
 
 import warnings 
 warnings.filterwarnings("ignore")
@@ -74,19 +75,19 @@ class CropAndExtract():
             fps = 25
         else:
             # loader for videos
-            video_stream = cv2.VideoCapture(input_path)
+            video_stream = cv2.VideoCapture(str(input_path))
             fps = video_stream.get(cv2.CAP_PROP_FPS)
             full_frames = [] 
             while 1:
                 still_reading, frame = video_stream.read()
                 if not still_reading:
                     video_stream.release()
-                    break 
-                full_frames.append(frame) 
+                    break
+                full_frames.append(frame)
                 if source_image_flag:
                     break
 
-        x_full_frames= [cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  for frame in full_frames] 
+        x_full_frames = [cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  for frame in full_frames]
 
         #### crop images as the 
         if crop_or_resize.lower() == 'crop': # default crop
