@@ -8,7 +8,7 @@ from time import strftime
 import os
 import sys
 import time
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from src.utils.preprocess import CropAndExtract
 from src.test_audio2coeff import Audio2Coeff
@@ -71,8 +71,8 @@ class Predictor(BasePredictor):
         self,
         image: Path = Input(description="Avatar image input"),
         audio: Path = Input(description="Driving audio input, mono only"),
-        ref_pose: Optional[Path] = Input(description="pose reference video", default=None),
-        ref_eyeblink: Optional[Path] = Input(description="eye blink reference video", default=None),
+        ref_pose: Path = Input(description="pose reference video"),
+        ref_eyeblink: Path = Input(description="eye blink reference video"),
         preprocess: str = Input(description="preprocess mode", choices=['crop', 'resize', 'full'], default='crop'),
         still: str = Input(
             description="still mode", choices=['True', 'False'], default='False'
@@ -85,12 +85,12 @@ class Predictor(BasePredictor):
             description="expression scale of output", ge=.01, le=5., default=1.
         ),
         enhancer: str = Input(
-            description="Face enhancer, [gfpgan, RestoreFormer]", choices=[None, 'gfpgan', 'RestoreFormer'], default=''
+            description="Face enhancer, [gfpgan, RestoreFormer]", choices=[' ', 'gfpgan', 'RestoreFormer'], default=' '
         ),
-        background_enhancer: Optional[str] = Input(
-            description="background enhancer, realesrgan", choices=[None, 'realesrgan'], default=None
+        background_enhancer: str = Input(
+            description="background enhancer, realesrgan", choices=[' ', 'realesrgan'], default=' '
         ),
-    ) -> Optional[str, Path, List[Path]]:
+    ) -> Union[str, Path, List[Path]]:
         """Run a single prediction on the model"""
 
         input_yaw_list, input_pitch_list, input_roll_list = None, None, None
