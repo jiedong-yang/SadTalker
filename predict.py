@@ -72,7 +72,7 @@ class Predictor(BasePredictor):
         image: Path = Input(description="Avatar image input"),
         audio: Path = Input(description="Driving audio input, mono only"),
         ref_pose: Path = Input(description="pose reference video"),
-        ref_eyeblink: Path = Input(description="eye blink reference video"),
+        # ref_eyeblink: Path = Input(description="eye blink reference video"),
         preprocess: str = Input(description="preprocess mode", choices=['crop', 'resize', 'full'], default='crop'),
         still: str = Input(
             description="still mode", choices=['True', 'False'], default='False'
@@ -92,6 +92,7 @@ class Predictor(BasePredictor):
         ),
     ) -> Union[str, Path, List[Path]]:
         """Run a single prediction on the model"""
+        ref_eyeblink = None
 
         input_yaw_list, input_pitch_list, input_roll_list = None, None, None
 
