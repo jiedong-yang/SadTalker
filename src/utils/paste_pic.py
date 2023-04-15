@@ -11,10 +11,10 @@ def paste_pic(video_path, pic_path, crop_info, new_audio_path, full_video_path):
         raise ValueError('pic_path must be a valid path to video/image file')
     elif os.path.splitext(pic_path)[-1] in ['.jpg', '.png', '.jpeg']:
         # loader for first frame
-        full_img = cv2.imread(pic_path)
+        full_img = cv2.imread(str(pic_path))
     else:
         # loader for videos
-        video_stream = cv2.VideoCapture(pic_path)
+        video_stream = cv2.VideoCapture(str(pic_path))
         fps = video_stream.get(cv2.CAP_PROP_FPS)
         full_frames = [] 
         while 1:

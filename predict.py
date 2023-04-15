@@ -92,6 +92,8 @@ class Predictor(BasePredictor):
         ),
     ) -> Union[str, Path, List[Path]]:
         """Run a single prediction on the model"""
+        image, audio, ref_pose = str(image), str(audio), str(ref_pose)
+
         ref_eyeblink = None
 
         input_yaw_list, input_pitch_list, input_roll_list = None, None, None
