@@ -77,20 +77,20 @@ class Predictor(BasePredictor):
         still: str = Input(
             description="still mode", choices=['True', 'False'], default='False'
         ),
-        pose_style: int = Input(description="style of poses, from 0 to 45", choices=list(range(46)), default=0),
+        pose_style: int = Input(description="style of poses, from 0 to 45", ge=0, le=45, default=0),
         batch_size: int = Input(
-            description="the batch size of facerender, defaulted by 2", choices=list(range(1, 17)), default=2
+            description="the batch size of facerender, defaulted by 2", ge=1, le=16, default=2
         ),
         expression_scale: float = Input(
             description="expression scale of output", ge=.01, le=5., default=1.
         ),
         enhancer: str = Input(
-            description="Face enhancer, [gfpgan, RestoreFormer]", choices=[' ', 'gfpgan', 'RestoreFormer'], default=' '
+            description="Face enhancer, [gfpgan, RestoreFormer]", choices=['None', 'gfpgan', 'RestoreFormer'], default='None'
         ),
         background_enhancer: str = Input(
-            description="background enhancer, realesrgan", choices=[' ', 'realesrgan'], default=' '
+            description="background enhancer, realesrgan", choices=['None', 'realesrgan'], default='None'
         ),
-    ) ->List[Path]:
+    ) -> List[Path]:
         """Run a single prediction on the model"""
         image, audio, ref_pose = str(image), str(audio), str(ref_pose)
 
@@ -99,8 +99,8 @@ class Predictor(BasePredictor):
         input_yaw_list, input_pitch_list, input_roll_list = None, None, None
 
         still = True if still == "True" else False
-        enhancer = None if enhancer == ' ' else enhancer
-        background_enhancer = None if background_enhancer == ' ' else background_enhancer
+        enhancer = None if enhancer == 'None' else enhancer
+        background_enhancer = None if background_enhancer == 'None' else background_enhancer
 
         save_dir = Path(tempfile.mkdtemp())
         first_frame_dir = os.path.join(save_dir, 'first_frame_dir')

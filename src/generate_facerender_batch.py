@@ -7,7 +7,7 @@ import scipy.io as scio
 
 def get_facerender_data(coeff_path, pic_path, first_coeff_path, audio_path, 
                         batch_size, input_yaw_list=None, input_pitch_list=None, input_roll_list=None, 
-                        expression_scale=1.0, still_mode = False, preprocess='crop'):
+                        expression_scale=1.0, still_mode=False, preprocess='crop'):
 
     semantic_radius = 13
     video_name = os.path.splitext(os.path.split(coeff_path)[-1])[0]
@@ -20,7 +20,7 @@ def get_facerender_data(coeff_path, pic_path, first_coeff_path, audio_path,
     source_image = img_as_float32(source_image)
     source_image = transform.resize(source_image, (256, 256, 3))
     source_image = source_image.transpose((2, 0, 1))
-    source_image_ts = torch.FloatTensor(source_image).unsqueeze(0)
+    source_image_ts = torch.FloatTensor(source_image).unsqueeze(0) #.to(device='cuda')
     source_image_ts = source_image_ts.repeat(batch_size, 1, 1, 1)
     data['source_image'] = source_image_ts
  
@@ -32,7 +32,7 @@ def get_facerender_data(coeff_path, pic_path, first_coeff_path, audio_path,
         source_semantics = source_semantics_dict['coeff_3dmm'][:1,:73]         #1 70
 
     source_semantics_new = transform_semantic_1(source_semantics, semantic_radius)
-    source_semantics_ts = torch.FloatTensor(source_semantics_new).unsqueeze(0)
+    source_semantics_ts = torch.FloatTensor(source_semantics_new).unsqueeze(0) #.to(device='cuda')
     source_semantics_ts = source_semantics_ts.repeat(batch_size, 1, 1)
     data['source_semantics'] = source_semantics_ts
 
@@ -50,7 +50,7 @@ def get_facerender_data(coeff_path, pic_path, first_coeff_path, audio_path,
     with open(txt_path+'.txt', 'w') as f:
         for coeff in generated_3dmm:
             for i in coeff:
-                f.write(str(i)[:7]   + '  '+'\t')
+                f.write(str(i)[:7] + '  '+'\t')
             f.write('\n')
 
     target_semantics_list = [] 
@@ -61,7 +61,7 @@ def get_facerender_data(coeff_path, pic_path, first_coeff_path, audio_path,
         target_semantics_list.append(target_semantics)
 
     remainder = frame_num%batch_size
-    if remainder!=0:
+    if remainder != 0:
         for _ in range(batch_size-remainder):
             target_semantics_list.append(target_semantics)
 
