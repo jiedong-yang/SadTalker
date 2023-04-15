@@ -79,7 +79,7 @@ class Predictor(BasePredictor):
         ),
         pose_style: int = Input(description="style of poses, from 0 to 45", choices=list(range(46)), default=0),
         batch_size: int = Input(
-            description="the batch size of facerender, defaulted by 2", choices=list(range(1, 11)), default=2
+            description="the batch size of facerender, defaulted by 2", choices=list(range(1, 21)), default=2
         ),
         expression_scale: float = Input(
             description="expression scale of output", ge=.01, le=5., default=1.
