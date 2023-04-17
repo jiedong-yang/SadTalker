@@ -193,7 +193,7 @@ class AnimateFromCoeff():
             paste_pic(path, pic_path, crop_info, new_audio_path, full_video_path)
             print(f'The generated video is named {video_save_dir}/{video_name_full}') 
         else:
-            return_path = av_path
+            full_video_path = av_path
 
         #### paste back then enhancers
         if enhancer:
@@ -212,6 +212,6 @@ class AnimateFromCoeff():
         os.remove(new_audio_path)
 
         if preprocess.lower() == 'full':
-            return av_path, full_video_path
+            return av_path, return_path
         return return_path
 
