@@ -211,7 +211,7 @@ class AnimateFromCoeff():
         os.remove(path)
         os.remove(new_audio_path)
 
-        if preprocess.lower() == 'full':
-            return av_path, return_path
+        # if preprocess.lower() == 'full':
+        #     return av_path, return_path
         return return_path
 
