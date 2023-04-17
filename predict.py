@@ -163,7 +163,7 @@ class Predictor(BasePredictor):
             # print(outputs)
             results = []
             for output in outputs:
-                print(output)
+                # print(output)
                 results.append(Path(output))
             return results
         return [Path(outputs)]
