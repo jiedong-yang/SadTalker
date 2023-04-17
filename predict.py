@@ -102,7 +102,7 @@ class Predictor(BasePredictor):
         enhancer = None if enhancer == 'None' else enhancer
         background_enhancer = None if background_enhancer == 'None' else background_enhancer
 
-        save_dir = Path(tempfile.mkdtemp())
+        save_dir = './tmp'
         first_frame_dir = os.path.join(save_dir, 'first_frame_dir')
         os.makedirs(first_frame_dir, exist_ok=True)
         print('3DMM Extraction for source image')
