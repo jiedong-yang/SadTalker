@@ -71,7 +71,7 @@ class Predictor(BasePredictor):
         self,
         image: Path = Input(description="Avatar image input"),
         audio: Path = Input(description="Driving audio input, mono only"),
-        ref_pose: Path = Input(description="pose reference video"),
+        # ref_pose: Path = Input(description="pose reference video"),
         # ref_eyeblink: Path = Input(description="eye blink reference video"),
         preprocess: str = Input(description="preprocess mode", choices=['full'], default='full'),
         still: str = Input(
@@ -92,7 +92,7 @@ class Predictor(BasePredictor):
         ),
     ) -> List[Path]:
         """Run a single prediction on the model"""
-        image, audio, ref_pose = str(image), str(audio), str(ref_pose)
+        image, audio, ref_pose = str(image), str(audio), None
 
         ref_eyeblink = None
 
