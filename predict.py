@@ -160,10 +160,10 @@ class Predictor(BasePredictor):
             )
 
         if preprocess == 'full':
-            print(outputs)
-            results = [Path(outputs)]
-            # for output in outputs:
-            #     print(output)
-            #     results.append(Path(output))
+            # print(outputs)
+            results = []
+            for output in outputs:
+                print(output)
+                results.append(Path(output))
             return results
         return [Path(outputs)]
