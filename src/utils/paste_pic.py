@@ -61,7 +61,7 @@ def paste_pic(video_path, pic_path, crop_info, new_audio_path, full_video_path):
         location = ((ox1+ox2) // 2, (oy1+oy2) // 2)
         gen_img = cv2.seamlessClone(p, full_img, mask, location, cv2.NORMAL_CLONE)
         # out_tmp.write(gen_img)
-        result_frames.append(gen_img)
+        result_frames.append(cv2.cvtColor(gen_img, cv2.COLOR_BGR2RGB))
 
     # out_tmp.release()
     imageio.mimsave(tmp_path, result_frames, fps=fps)
