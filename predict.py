@@ -40,14 +40,7 @@ class Predictor(BasePredictor):
         audio2exp_checkpoint = os.path.join('./checkpoints', 'auido2exp_00300-model.pth')
         audio2exp_yaml_path = os.path.join('src', 'config', 'auido2exp.yaml')
 
-        free_view_checkpoint = os.path.join('./checkpoints', 'facevid2vid_00189-model.pth.tar')
-
-        # if preprocess == 'full':
-        mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00109-model.pth.tar')
-        facerender_yaml_path = os.path.join('src', 'config', 'facerender_still.yaml')
-        # else:
-        #     mapping_checkpoint = os.path.join(current_root_path, './checkpoints', 'mapping_00229-model.pth.tar')
-        #     facerender_yaml_path = os.path.join(current_root_path, 'src', 'config', 'facerender.yaml')
+        self.free_view_checkpoint = os.path.join('./checkpoints', 'facevid2vid_00189-model.pth.tar')
 
         # init model
         print(path_of_net_recon_model)
@@ -61,11 +54,7 @@ class Predictor(BasePredictor):
             wav2lip_checkpoint, "cuda"
         )
 
-        print(free_view_checkpoint)
-        print(mapping_checkpoint)
-        self.animate_from_coeff = AnimateFromCoeff(
-            free_view_checkpoint, mapping_checkpoint, facerender_yaml_path, "cuda"
-        )
+        print(self.free_view_checkpoint)
 
     def predict(
         self,
@@ -73,13 +62,13 @@ class Predictor(BasePredictor):
         audio: Path = Input(description="Driving audio input, mono only"),
         # ref_pose: Path = Input(description="pose reference video"),
         # ref_eyeblink: Path = Input(description="eye blink reference video"),
-        preprocess: str = Input(description="preprocess mode", choices=['full'], default='full'),
+        preprocess: str = Input(description="preprocess mode", choices=['full', 'crop', 'resize'], default='full'),
         still: str = Input(
             description="still mode", choices=['True', 'False'], default='False'
         ),
         pose_style: int = Input(description="style of poses, from 0 to 45", ge=0, le=45, default=0),
         batch_size: int = Input(
-            description="the batch size of facerender, defaulted by 2", ge=1, le=32, default=2
+            description="the batch size of facerender, defaulted by 16", ge=1, le=32, default=16
         ),
         expression_scale: float = Input(
             description="expression scale of output", ge=.01, le=5., default=1.
@@ -106,6 +95,19 @@ class Predictor(BasePredictor):
         first_frame_dir = os.path.join(save_dir, 'first_frame_dir')
         os.makedirs(first_frame_dir, exist_ok=True)
         print('3DMM Extraction for source image')
+
+        if preprocess == 'full':
+            mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00109-model.pth.tar')
+            facerender_yaml_path = os.path.join('src', 'config', 'facerender_still.yaml')
+        else:
+            mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00229-model.pth.tar')
+            facerender_yaml_path = os.path.join('src', 'config', 'facerender.yaml')
+
+        print(mapping_checkpoint)
+        self.animate_from_coeff = AnimateFromCoeff(
+            self.free_view_checkpoint, mapping_checkpoint, facerender_yaml_path, "cuda"
+        )
+
         with torch.inference_mode():
             first_coeff_path, crop_pic_path, crop_info = self.preprocess_model.generate(
                 image, first_frame_dir, preprocess, source_image_flag=True
