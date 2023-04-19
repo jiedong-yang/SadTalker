@@ -56,13 +56,21 @@ class Predictor(BasePredictor):
 
         print(self.free_view_checkpoint)
 
+        mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00229-model.pth.tar')
+        facerender_yaml_path = os.path.join('src', 'config', 'facerender.yaml')
+
+        print(mapping_checkpoint)
+        self.animate_from_coeff = AnimateFromCoeff(
+            self.free_view_checkpoint, mapping_checkpoint, facerender_yaml_path, "cuda"
+        )
+
     def predict(
         self,
         image: Path = Input(description="Avatar image input"),
         audio: Path = Input(description="Driving audio input, mono only"),
         # ref_pose: Path = Input(description="pose reference video"),
         # ref_eyeblink: Path = Input(description="eye blink reference video"),
-        preprocess: str = Input(description="preprocess mode", choices=['full', 'crop', 'resize'], default='full'),
+        preprocess: str = Input(description="preprocess mode", choices=['crop', 'resize'], default='crop'),
         still: str = Input(
             description="still mode", choices=['True', 'False'], default='False'
         ),
@@ -96,17 +104,17 @@ class Predictor(BasePredictor):
         os.makedirs(first_frame_dir, exist_ok=True)
         print('3DMM Extraction for source image')
 
-        if preprocess == 'full':
-            mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00109-model.pth.tar')
-            facerender_yaml_path = os.path.join('src', 'config', 'facerender_still.yaml')
-        else:
-            mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00229-model.pth.tar')
-            facerender_yaml_path = os.path.join('src', 'config', 'facerender.yaml')
-
-        print(mapping_checkpoint)
-        self.animate_from_coeff = AnimateFromCoeff(
-            self.free_view_checkpoint, mapping_checkpoint, facerender_yaml_path, "cuda"
-        )
+        # if preprocess == 'full':
+        #     mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00109-model.pth.tar')
+        #     facerender_yaml_path = os.path.join('src', 'config', 'facerender_still.yaml')
+        # else:
+        #     mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00229-model.pth.tar')
+        #     facerender_yaml_path = os.path.join('src', 'config', 'facerender.yaml')
+        #
+        # print(mapping_checkpoint)
+        # self.animate_from_coeff = AnimateFromCoeff(
+        #     self.free_view_checkpoint, mapping_checkpoint, facerender_yaml_path, "cuda"
+        # )
 
         with torch.inference_mode():
             first_coeff_path, crop_pic_path, crop_info = self.preprocess_model.generate(
