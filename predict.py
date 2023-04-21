@@ -105,7 +105,7 @@ class Predictor(BasePredictor):
         return_junk = eval(return_junk)
 
         if return_junk:
-            return "keep it going!"
+            return [Path('./examples/driven_audio/junk_audio.mp3')]
 
         enhancer = None if enhancer == 'None' else enhancer
         background_enhancer = None if background_enhancer == 'None' else background_enhancer
