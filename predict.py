@@ -72,7 +72,7 @@ class Predictor(BasePredictor):
         ),
         # ref_pose: Path = Input(description="pose reference video"),
         # ref_eyeblink: Path = Input(description="eye blink reference video"),
-        preprocess: str = Input(description="preprocess mode", choices=['crop', 'resize'], default='crop'),
+        preprocess: str = Input(description="preprocess mode", choices=['crop', 'resize', 'full'], default='crop'),
         still: str = Input(
             description="still mode", choices=['True', 'False'], default='False'
         ),
