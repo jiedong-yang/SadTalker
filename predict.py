@@ -89,6 +89,10 @@ class Predictor(BasePredictor):
         background_enhancer: str = Input(
             description="background enhancer, realesrgan", choices=['None', 'realesrgan'], default='None'
         ),
+        return_junk: str = Input(
+            description="Bool variable to determine if use junk input for synthesis",
+            choices=['True', 'False'], default='False'
+        ),
     ) -> List[Path]:
         """Run a single prediction on the model"""
         image, audio, ref_pose = str(image), str(audio), None
@@ -97,7 +101,12 @@ class Predictor(BasePredictor):
 
         input_yaw_list, input_pitch_list, input_roll_list = None, None, None
 
-        still = True if still == "True" else False
+        still = eval(still)
+        return_junk = eval(return_junk)
+
+        if return_junk:
+            return "keep it going!"
+
         enhancer = None if enhancer == 'None' else enhancer
         background_enhancer = None if background_enhancer == 'None' else background_enhancer
 
