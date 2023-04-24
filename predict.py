@@ -70,7 +70,7 @@ class Predictor(BasePredictor):
         audio: Path = Input(
             description="Driving audio input, mono only", default=Path('./examples/driven_audio/junk_audio.mp3')
         ),
-        # ref_pose: Path = Input(description="pose reference video"),
+        ref_pose: Path = Input(description="pose reference video"),
         # ref_eyeblink: Path = Input(description="eye blink reference video"),
         preprocess: str = Input(description="preprocess mode", choices=['crop', 'resize'], default='crop'),
         still: str = Input(
