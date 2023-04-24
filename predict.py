@@ -95,7 +95,7 @@ class Predictor(BasePredictor):
         ),
     ) -> List[Path]:
         """Run a single prediction on the model"""
-        image, audio, ref_pose = str(image), str(audio), None
+        image, audio, ref_pose = str(image), str(audio), str(ref_pose)
 
         ref_eyeblink = None
 
