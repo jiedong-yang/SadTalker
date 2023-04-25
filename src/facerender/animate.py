@@ -186,12 +186,13 @@ class AnimateFromCoeff():
         print(f'The generated video is named {video_name} in {video_save_dir}')
 
         if preprocess.lower() == 'full':
-            # only add watermark to the full image.
-            video_name_full = x['video_name'] + '_full.mp4'
-            full_video_path = os.path.join(video_save_dir, video_name_full)
-            return_path = full_video_path
-            paste_pic(path, pic_path, crop_info, new_audio_path, full_video_path)
-            print(f'The generated video is named {video_save_dir}/{video_name_full}') 
+            # # only add watermark to the full image.
+            # video_name_full = x['video_name'] + '_full.mp4'
+            # full_video_path = os.path.join(video_save_dir, video_name_full)
+            # return_path = full_video_path
+            # paste_pic(path, pic_path, crop_info, new_audio_path, full_video_path)
+            # print(f'The generated video is named {video_save_dir}/{video_name_full}')
+            full_video_path = av_path
         else:
             full_video_path = av_path
 
@@ -211,7 +212,7 @@ class AnimateFromCoeff():
         os.remove(path)
         os.remove(new_audio_path)
 
-        if preprocess.lower() == 'full':
-            return av_path, return_path
+        # if preprocess.lower() == 'full':
+        #     return av_path, return_path
         return return_path
 
