@@ -56,13 +56,13 @@ class Predictor(BasePredictor):
 
         print(self.free_view_checkpoint)
 
-        mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00229-model.pth.tar')
-        facerender_yaml_path = os.path.join('src', 'config', 'facerender.yaml')
-
-        print(mapping_checkpoint)
-        self.animate_from_coeff = AnimateFromCoeff(
-            self.free_view_checkpoint, mapping_checkpoint, facerender_yaml_path, "cuda"
-        )
+        # mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00229-model.pth.tar')
+        # facerender_yaml_path = os.path.join('src', 'config', 'facerender.yaml')
+        #
+        # print(mapping_checkpoint)
+        # self.animate_from_coeff = AnimateFromCoeff(
+        #     self.free_view_checkpoint, mapping_checkpoint, facerender_yaml_path, "cuda"
+        # )
 
     def predict(
         self,
@@ -72,19 +72,20 @@ class Predictor(BasePredictor):
         ),
         ref_pose: Path = Input(description="pose reference video"),
         # ref_eyeblink: Path = Input(description="eye blink reference video"),
-        preprocess: str = Input(description="preprocess mode", choices=['crop', 'resize'], default='crop'),
+        preprocess: str = Input(description="preprocess mode", choices=['crop', 'resize', 'full'], default='crop'),
         still: str = Input(
             description="still mode", choices=['True', 'False'], default='False'
         ),
         pose_style: int = Input(description="style of poses, from 0 to 45", ge=0, le=45, default=0),
         batch_size: int = Input(
-            description="the batch size of facerender, defaulted by 16", ge=1, le=32, default=16
+            description="the batch size of facerender, defaulted by 16", ge=1, le=40, default=16
         ),
         expression_scale: float = Input(
             description="expression scale of output", ge=.01, le=5., default=1.
         ),
         enhancer: str = Input(
-            description="Face enhancer, [gfpgan, RestoreFormer]", choices=['None', 'gfpgan', 'RestoreFormer'], default='None'
+            description="Face enhancer, [gfpgan, RestoreFormer]",
+            choices=['None', 'gfpgan', 'RestoreFormer'], default='None'
         ),
         background_enhancer: str = Input(
             description="background enhancer, realesrgan", choices=['None', 'realesrgan'], default='None'
@@ -115,17 +116,17 @@ class Predictor(BasePredictor):
         os.makedirs(first_frame_dir, exist_ok=True)
         print('3DMM Extraction for source image')
 
-        # if preprocess == 'full':
-        #     mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00109-model.pth.tar')
-        #     facerender_yaml_path = os.path.join('src', 'config', 'facerender_still.yaml')
-        # else:
-        #     mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00229-model.pth.tar')
-        #     facerender_yaml_path = os.path.join('src', 'config', 'facerender.yaml')
-        #
-        # print(mapping_checkpoint)
-        # self.animate_from_coeff = AnimateFromCoeff(
-        #     self.free_view_checkpoint, mapping_checkpoint, facerender_yaml_path, "cuda"
-        # )
+        if preprocess == 'full':
+            mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00109-model.pth.tar')
+            facerender_yaml_path = os.path.join('src', 'config', 'facerender_still.yaml')
+        else:
+            mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00229-model.pth.tar')
+            facerender_yaml_path = os.path.join('src', 'config', 'facerender.yaml')
+
+        print(mapping_checkpoint)
+        self.animate_from_coeff = AnimateFromCoeff(
+            self.free_view_checkpoint, mapping_checkpoint, facerender_yaml_path, "cuda"
+        )
 
         with torch.inference_mode():
             first_coeff_path, crop_pic_path, crop_info = self.preprocess_model.generate(
