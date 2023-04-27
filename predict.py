@@ -70,7 +70,7 @@ class Predictor(BasePredictor):
         audio: Path = Input(
             description="Driving audio input, mono only", default=Path('./examples/driven_audio/junk_audio.mp3')
         ),
-        # ref_pose: Path = Input(description="pose reference video"),
+        ref_pose: Path = Input(description="pose reference video"),
         # ref_eyeblink: Path = Input(description="eye blink reference video"),
         preprocess: str = Input(description="preprocess mode", choices=['crop', 'resize', 'full'], default='crop'),
         still: str = Input(
@@ -97,7 +97,7 @@ class Predictor(BasePredictor):
     ) -> List[Path]:
         """Run a single prediction on the model"""
         image, audio  = str(image), str(audio)
-        ref_pose = None
+        ref_pose = str(ref_pose)
         ref_eyeblink = None
 
         input_yaw_list, input_pitch_list, input_roll_list = None, None, None
