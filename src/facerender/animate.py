@@ -56,7 +56,7 @@ class AnimateFromCoeff():
         else:
             raise AttributeError("Checkpoint should be specified for video head pose estimator.")
 
-        if  mapping_checkpoint is not None:
+        if mapping_checkpoint is not None:
             self.load_cpk_mapping(mapping_checkpoint, mapping=mapping)
         else:
             raise AttributeError("Checkpoint should be specified for video head pose estimator.") 
@@ -86,16 +86,16 @@ class AnimateFromCoeff():
             he_estimator.load_state_dict(checkpoint['he_estimator'])
         if discriminator is not None:
             try:
-               discriminator.load_state_dict(checkpoint['discriminator'])
+                discriminator.load_state_dict(checkpoint['discriminator'])
             except:
-               print ('No discriminator in the state-dict. Dicriminator will be randomly initialized')
+                print('No discriminator in the state-dict. Dicriminator will be randomly initialized')
         if optimizer_generator is not None:
             optimizer_generator.load_state_dict(checkpoint['optimizer_generator'])
         if optimizer_discriminator is not None:
             try:
                 optimizer_discriminator.load_state_dict(checkpoint['optimizer_discriminator'])
             except RuntimeError as e:
-                print ('No discriminator optimizer in the state-dict. Optimizer will be not initialized')
+                print('No discriminator optimizer in the state-dict. Optimizer will be not initialized')
         if optimizer_kp_detector is not None:
             optimizer_kp_detector.load_state_dict(checkpoint['optimizer_kp_detector'])
         if optimizer_he_estimator is not None:

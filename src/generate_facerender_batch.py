@@ -13,14 +13,14 @@ def get_facerender_data(coeff_path, pic_path, first_coeff_path, audio_path,
     video_name = os.path.splitext(os.path.split(coeff_path)[-1])[0]
     txt_path = os.path.splitext(coeff_path)[0]
 
-    data={}
+    data = {}
 
     img1 = Image.open(pic_path)
     source_image = np.array(img1)
     source_image = img_as_float32(source_image)
     source_image = transform.resize(source_image, (256, 256, 3))
     source_image = source_image.transpose((2, 0, 1))
-    source_image_ts = torch.FloatTensor(source_image).unsqueeze(0) #.to(device='cuda')
+    source_image_ts = torch.FloatTensor(source_image).unsqueeze(0)  #.to(device='cuda')
     source_image_ts = source_image_ts.repeat(batch_size, 1, 1, 1)
     data['source_image'] = source_image_ts
  
