@@ -7,6 +7,7 @@ import torch
 from time import strftime
 import os
 import sys
+import json
 import time
 from typing import Optional, List, Union
 
@@ -64,13 +65,27 @@ class Predictor(BasePredictor):
         #     self.free_view_checkpoint, mapping_checkpoint, facerender_yaml_path, "cuda"
         # )
 
+    def get_data_paths(self, index_string, json_file="precompute/video_mapping.json"):
+        # Convert the index string to a list of integers
+        indices = list(map(int, index_string.split(',')))
+
+        # Load the video mapping from the JSON file
+        with open(json_file, 'r') as f:
+            video_mapping = json.load(f)
+
+        # Get the video paths for the specified indices
+        video_paths = [video_mapping[str(index)]['data_path'] for index in indices]
+
+        return video_paths
+
     def predict(
         self,
         image: Path = Input(description="Avatar image input", default=Path('./examples/source_image/happy.png')),
         audio: Path = Input(
             description="Driving audio input, mono only", default=Path('./examples/driven_audio/junk_audio.mp3')
         ),
-        ref_pose: Path = Input(description="pose reference video"),
+        # ref_pose: Path = Input(description="pose reference video"),
+        ref_pose_code: str = Input(description="pose reference precomputation code string", default='0'),
         # ref_eyeblink: Path = Input(description="eye blink reference video"),
         preprocess: str = Input(description="preprocess mode", choices=['crop', 'resize', 'full'], default='crop'),
         still: str = Input(
@@ -95,9 +110,12 @@ class Predictor(BasePredictor):
             choices=['True', 'False'], default='False'
         ),
     ) -> List[Path]:
+        def is_integers_and_commas(s):
+            return all(c.isdigit() or c == ',' for c in s)
+
         """Run a single prediction on the model"""
-        image, audio  = str(image), str(audio)
-        ref_pose = str(ref_pose)
+        image, audio = str(image), str(audio)
+        ref_pose = None  # str(ref_pose)
         ref_eyeblink = None
 
         input_yaw_list, input_pitch_list, input_roll_list = None, None, None
@@ -157,6 +175,10 @@ class Predictor(BasePredictor):
                     ref_pose_coeff_path, _, _ = self.preprocess_model.generate(ref_pose, ref_pose_frame_dir)
             else:
                 ref_pose_coeff_path = None
+
+            # get precomputed data
+            if ref_pose_code is not None and len(ref_pose_code) > 0 and is_integers_and_commas(ref_pose_code):
+                ref_pose_coeff_path = self.get_data_paths(ref_pose_code)
 
             # audio2ceoff
             batch = get_data(first_coeff_path, audio, "cuda", ref_eyeblink_coeff_path, still=still)
