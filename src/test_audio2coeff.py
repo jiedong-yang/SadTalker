@@ -86,7 +86,11 @@ class Audio2Coeff():
             coeffs_pred_numpy = coeffs_pred[0].clone().detach().cpu().numpy()
 
             if ref_pose_coeff_path is not None:
-                 coeffs_pred_numpy = self.using_refpose(coeffs_pred_numpy, ref_pose_coeff_path)
+                if type(ref_pose_coeff_path) == str:
+                    coeffs_pred_numpy = self.using_refpose(coeffs_pred_numpy, ref_pose_coeff_path)
+                # using a list of precomputed references
+                elif type(ref_pose_coeff_path) == list:
+                    coeffs_pred_numpy = self.using_refposes(coeffs_pred_numpy, ref_pose_coeff_path)
         
             savemat(os.path.join(coeff_save_dir, '%s##%s.mat'%(batch['pic_name'], batch['audio_name'])),  
                     {'coeff_3dmm': coeffs_pred_numpy})
@@ -106,6 +110,35 @@ class Audio2Coeff():
             refpose_coeff = np.concatenate(refpose_coeff_list, axis=0)
 
         coeffs_pred_numpy[:, 64:70] = refpose_coeff[:num_frames, :] 
+        return coeffs_pred_numpy
+
+    def using_refposes(self, coeffs_pred_numpy, ref_pose_coeff_paths: list):
+        """
+
+        :param coeffs_pred_numpy:
+        :param ref_pose_coeff_paths:
+        :return:
+        """
+        num_frames = coeffs_pred_numpy.shape[0]
+        refpose_num_frames = 0
+        refpose_coeffs_list = []
+        for ref_pose_coeff_path in ref_pose_coeff_paths:
+            refpose_coeff_dict = loadmat(ref_pose_coeff_path)
+            refpose_coeff = refpose_coeff_dict['coeff_3dmm'][:, 64:70]
+            refpose_num_frames += refpose_coeff.shape[0]
+            refpose_coeffs_list.append(refpose_coeff)
+
+        refpose_coeffs_total = np.concatenate(refpose_coeffs_list, axis=0)
+
+        if refpose_num_frames < num_frames:
+            div = num_frames // refpose_num_frames
+            re = num_frames % refpose_num_frames
+            refpose_coeff_list = [refpose_coeffs_total for i in range(div)]
+            refpose_coeff_list.append(refpose_coeffs_total[:re, :])
+            refpose_coeffs_total = np.concatenate(refpose_coeff_list, axis=0)
+
+        coeffs_pred_numpy[:, 64:70] = refpose_coeffs_total[:num_frames, :]
+
         return coeffs_pred_numpy
 
 
