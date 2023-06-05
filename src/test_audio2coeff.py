@@ -7,7 +7,8 @@ from scipy.signal import savgol_filter
 
 from src.audio2pose_models.audio2pose import Audio2Pose
 from src.audio2exp_models.networks import SimpleWrapperV2 
-from src.audio2exp_models.audio2exp import Audio2Exp  
+from src.audio2exp_models.audio2exp import Audio2Exp
+
 
 def load_cpk(checkpoint_path, model=None, optimizer=None, device="cpu"):
     checkpoint = torch.load(checkpoint_path, map_location=torch.device(device))
@@ -17,6 +18,7 @@ def load_cpk(checkpoint_path, model=None, optimizer=None, device="cpu"):
         optimizer.load_state_dict(checkpoint['optimizer'])
 
     return checkpoint['epoch']
+
 
 class Audio2Coeff():
 
@@ -92,10 +94,10 @@ class Audio2Coeff():
                 elif type(ref_pose_coeff_path) == list:
                     coeffs_pred_numpy = self.using_refposes(coeffs_pred_numpy, ref_pose_coeff_path)
         
-            savemat(os.path.join(coeff_save_dir, '%s##%s.mat'%(batch['pic_name'], batch['audio_name'])),  
+            savemat(os.path.join(coeff_save_dir, '%s##%s.mat' % (batch['pic_name'], batch['audio_name'])),
                     {'coeff_3dmm': coeffs_pred_numpy})
 
-            return os.path.join(coeff_save_dir, '%s##%s.mat'%(batch['pic_name'], batch['audio_name']))
+            return os.path.join(coeff_save_dir, '%s##%s.mat' % (batch['pic_name'], batch['audio_name']))
     
     def using_refpose(self, coeffs_pred_numpy, ref_pose_coeff_path):
         num_frames = coeffs_pred_numpy.shape[0]
