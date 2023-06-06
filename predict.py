@@ -9,6 +9,7 @@ import os
 import sys
 import json
 import time
+import zipfile
 from typing import Optional, List, Union
 
 from src.utils.preprocess import CropAndExtract
@@ -56,6 +57,10 @@ class Predictor(BasePredictor):
         )
 
         print(self.free_view_checkpoint)
+
+        # unzip precomputed data
+        with zipfile.ZipFile('precompute/datafinal-results.zip', 'r') as zip_ref:
+            zip_ref.extractall('precompute')
 
         # mapping_checkpoint = os.path.join('./checkpoints', 'mapping_00229-model.pth.tar')
         # facerender_yaml_path = os.path.join('src', 'config', 'facerender.yaml')
@@ -178,6 +183,7 @@ class Predictor(BasePredictor):
 
             # get precomputed data
             if ref_pose_code is not None and len(ref_pose_code) > 0 and is_integers_and_commas(ref_pose_code):
+                print(f"Using precomputed data for code {ref_pose_code}")
                 ref_pose_coeff_path = self.get_data_paths(ref_pose_code)
 
             # audio2ceoff
