@@ -21,6 +21,7 @@ import imageio
 import warnings 
 warnings.filterwarnings("ignore")
 
+
 def split_coeff(coeffs):
         """
         Return:
@@ -87,10 +88,10 @@ class CropAndExtract():
                 if source_image_flag:
                     break
 
-        x_full_frames = [cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  for frame in full_frames]
+        x_full_frames = [cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) for frame in full_frames]
 
         #### crop images as the 
-        if crop_or_resize.lower() == 'crop': # default crop
+        if crop_or_resize.lower() == 'crop':  # default crop
             x_full_frames, crop, quad = self.croper.crop(x_full_frames, still=True, xsize=pic_size)
             clx, cly, crx, cry = crop
             lx, ly, rx, ry = quad
@@ -107,8 +108,8 @@ class CropAndExtract():
         else: # resize mode
             oy1, oy2, ox1, ox2 = 0, x_full_frames[0].shape[0], 0, x_full_frames[0].shape[1] 
             crop_info = ((ox2 - ox1, oy2 - oy1), None, None)
-
-        frames_pil = [Image.fromarray(cv2.resize(frame,(pic_size, pic_size))) for frame in x_full_frames]
+        # TODO:
+        frames_pil = [Image.fromarray(cv2.resize(frame, (pic_size, pic_size))) for frame in x_full_frames]
         if len(frames_pil) == 0:
             print('No face is detected in the input file')
             return None, None
@@ -117,7 +118,7 @@ class CropAndExtract():
         for frame in frames_pil:
             cv2.imwrite(png_path, cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR))
 
-        # 2. get the landmark according to the detected face. 
+        # 2. get the landmark according to the detected face. TODO:
         if not os.path.isfile(landmarks_path): 
             lm = self.kp_extractor.extract_keypoint(frames_pil, landmarks_path)
         else:
@@ -150,7 +151,7 @@ class CropAndExtract():
                     full_coeff = self.net_recon(im_t)
                     coeffs = split_coeff(full_coeff)
 
-                pred_coeff = {key:coeffs[key].cpu().numpy() for key in coeffs}
+                pred_coeff = {key: coeffs[key].cpu().numpy() for key in coeffs}
  
                 pred_coeff = np.concatenate([
                     pred_coeff['exp'], 
@@ -161,7 +162,7 @@ class CropAndExtract():
                 video_coeffs.append(pred_coeff)
                 full_coeffs.append(full_coeff.cpu().numpy())
 
-            semantic_npy = np.array(video_coeffs)[:,0] 
+            semantic_npy = np.array(video_coeffs)[:, 0]
 
             savemat(coeff_path, {'coeff_3dmm': semantic_npy, 'full_3dmm': np.array(full_coeffs)[0]})
 
